@@ -11,4 +11,3 @@ Radar de Smart Money Concepts para Bitget.
 - BTC
 - ETH
 - SOL
-prueba
