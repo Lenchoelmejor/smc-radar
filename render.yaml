@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: smc-radar
+    runtime: python
+
+    buildCommand: pip install -r requirements.txt
+
+    startCommand: python main.py
+
+    plan: free
+
+    autoDeploy: true
