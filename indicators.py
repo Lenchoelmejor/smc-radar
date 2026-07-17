@@ -25,12 +25,12 @@ def calculate_rsi(candles, period=14):
         gain = max(diff, 0)
         loss = max(-diff, 0)
 
-        avg_gain = ((avg_gain * 13) + gain) / 14
-        avg_loss = ((avg_loss * 13) + loss) / 14
+        avg_gain = ((avg_gain * (period - 1)) + gain) / period
+        avg_loss = ((avg_loss * (period - 1)) + loss) / period
 
     if avg_loss == 0:
-        return 100
+        return 100.0
 
     rs = avg_gain / avg_loss
 
-    return 100 - (100 / (1 + rs))
+    return round(100 - (100 / (1 + rs)), 2)
