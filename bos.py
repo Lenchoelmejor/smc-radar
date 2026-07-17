@@ -1,18 +1,33 @@
 def detect_bos(structure):
 
-    if structure["hh"] and structure["hl"]:
+    bullish = structure["hh"] and structure["hl"]
+
+    bearish = structure["lh"] and structure["ll"]
+
+    if bullish:
+
         return {
+
             "bos": True,
+
             "direction": "bullish"
+
         }
 
-    if structure["lh"] and structure["ll"]:
+    if bearish:
+
         return {
+
             "bos": True,
+
             "direction": "bearish"
+
         }
 
     return {
+
         "bos": False,
+
         "direction": "none"
+
     }
