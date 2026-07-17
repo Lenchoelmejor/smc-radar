@@ -4,47 +4,58 @@ from telegram_bot import send_message
 from scanner import scan
 
 
+PAIRS = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "BNBUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+]
+
+
 def startup():
 
     print("=" * 60)
     print("LENCHO SMC RADAR")
     print("=" * 60)
 
-    result = scan("BTCUSDT")
+    message = "📊 LENCHO SMC RADAR\n\n"
 
-    if result["success"]:
+    for symbol in PAIRS:
 
-        message = (
-            "📊 BTCUSDT\n\n"
-            f"💵 Precio: {result['price']}\n"
-            f"📈 RSI (14): {result['rsi']}\n"
-            f"📊 Tendencia: {result['trend']}"
-        )
+        result = scan(symbol)
 
-        print(message)
+        if result["success"]:
 
-        send_message(message)
+            message += (
+                f"📈 {symbol}\n"
+                f"💰 Precio: {result['price']}\n"
+                f"📊 RSI: {result['rsi']}\n"
+                f"📉 Tendencia: {result['trend']}\n\n"
+            )
 
-    else:
+        else:
 
-        print(result["error"])
+            message += (
+                f"❌ {symbol}\n"
+                f"{result['error']}\n\n"
+            )
 
-        send_message(
-            f"❌ Error:\n\n{result['error']}"
-        )
+    print(message)
+
+    send_message(message)
 
 
 def main():
 
-    startup()
-
     while True:
+
+        startup()
 
         print("Esperando próximo escaneo...")
 
         time.sleep(900)
-
-        startup()
 
 
 if __name__ == "__main__":
