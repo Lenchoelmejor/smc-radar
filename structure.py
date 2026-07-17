@@ -1,22 +1,31 @@
+from swings import detect_swings
+
+
 def detect_market_structure(candles):
 
-    if len(candles) < 40:
-        raise Exception("No hay suficientes velas")
+    highs, lows = detect_swings(candles)
 
-    highs = [c["high"] for c in candles]
-    lows = [c["low"] for c in candles]
+    if len(highs) < 2 or len(lows) < 2:
 
-    recent_high = max(highs[-10:])
-    previous_high = max(highs[-20:-10])
+        return {
+            "trend": "unknown",
+            "hh": False,
+            "hl": False,
+            "lh": False,
+            "ll": False,
+        }
 
-    recent_low = min(lows[-10:])
-    previous_low = min(lows[-20:-10])
+    last_high = highs[-1]["price"]
+    prev_high = highs[-2]["price"]
 
-    hh = recent_high > previous_high
-    hl = recent_low > previous_low
+    last_low = lows[-1]["price"]
+    prev_low = lows[-2]["price"]
 
-    lh = recent_high < previous_high
-    ll = recent_low < previous_low
+    hh = last_high > prev_high
+    hl = last_low > prev_low
+
+    lh = last_high < prev_high
+    ll = last_low < prev_low
 
     if hh and hl:
         trend = "bullish"
@@ -28,9 +37,17 @@ def detect_market_structure(candles):
         trend = "ranging"
 
     return {
+
         "trend": trend,
+
         "hh": hh,
         "hl": hl,
         "lh": lh,
         "ll": ll,
+
+        "last_high": last_high,
+        "last_low": last_low,
+
+        "previous_high": prev_high,
+        "previous_low": prev_low,
     }
