@@ -2,6 +2,7 @@ import time
 
 from telegram_bot import send_message
 from bitget import get_server_time
+from market import get_candles
 
 
 def startup():
@@ -24,6 +25,25 @@ def startup():
     except Exception as e:
 
         print(f"❌ Error Bitget: {e}")
+
+    # -----------------------------------------
+    # CANDLES
+    # -----------------------------------------
+
+    try:
+
+        candles = get_candles(
+            symbol="BTCUSDT",
+            interval="1H",
+            limit=5,
+        )
+
+        print("✅ Velas recibidas")
+        print(candles)
+
+    except Exception as e:
+
+        print(f"❌ Error obteniendo velas: {e}")
 
     # -----------------------------------------
     # TELEGRAM
@@ -54,7 +74,7 @@ def main():
 
         print("Radar activo...")
 
-        # Más adelante aquí irá:
+        # Próximamente:
         # scanner.scan()
 
         time.sleep(900)
@@ -62,4 +82,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    from market import get_candles
