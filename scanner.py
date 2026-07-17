@@ -1,41 +1,33 @@
 from market import get_candles
 from indicators import calculate_rsi
-from structure import market_structure
+from structure import detect_market_structure
 
 
-def scan(symbol="BTCUSDT"):
+def scan(symbol):
 
     try:
 
-        response = get_candles(
-            symbol=symbol,
-            interval="1H",
-            limit=200,
-        )
+        df = get_candles(symbol)
 
-        candles = response["data"]
+        rsi = calculate_rsi(df)
 
-        closes = []
-
-        for candle in candles:
-            closes.append(float(candle[4]))
-
-        rsi = calculate_rsi(closes)
-
-        trend = market_structure(closes)
+        structure = detect_market_structure(df)
 
         return {
             "success": True,
             "symbol": symbol,
-            "trend": trend,
-            "rsi": rsi,
-            "price": closes[-1],
+            "price": round(df["close"].iloc[-1], 2),
+            "rsi": round(rsi, 2),
+            "trend": structure["trend"],
+            "hh": structure["hh"],
+            "hl": structure["hl"],
+            "lh": structure["lh"],
+            "ll": structure["ll"],
         }
 
     except Exception as e:
 
         return {
             "success": False,
-            "symbol": symbol,
             "error": str(e),
         }
