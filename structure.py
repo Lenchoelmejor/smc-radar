@@ -1,36 +1,36 @@
-def detect_market_structure(df):
+def detect_market_structure(candles):
 
-    highs = df["high"].tolist()
-    lows = df["low"].tolist()
+    if len(candles) < 40:
+        raise Exception("No hay suficientes velas")
 
-    last_high = max(highs[-10:])
-    prev_high = max(highs[-20:-10])
+    highs = [c["high"] for c in candles]
+    lows = [c["low"] for c in candles]
 
-    last_low = min(lows[-10:])
-    prev_low = min(lows[-20:-10])
+    recent_high = max(highs[-10:])
+    previous_high = max(highs[-20:-10])
 
-    if last_high > prev_high and last_low > prev_low:
-        return {
-            "trend": "bullish",
-            "hh": True,
-            "hl": True,
-            "lh": False,
-            "ll": False,
-        }
+    recent_low = min(lows[-10:])
+    previous_low = min(lows[-20:-10])
 
-    elif last_high < prev_high and last_low < prev_low:
-        return {
-            "trend": "bearish",
-            "hh": False,
-            "hl": False,
-            "lh": True,
-            "ll": True,
-        }
+    hh = recent_high > previous_high
+    hl = recent_low > previous_low
+
+    lh = recent_high < previous_high
+    ll = recent_low < previous_low
+
+    if hh and hl:
+        trend = "bullish"
+
+    elif lh and ll:
+        trend = "bearish"
+
+    else:
+        trend = "ranging"
 
     return {
-        "trend": "ranging",
-        "hh": False,
-        "hl": False,
-        "lh": False,
-        "ll": False,
+        "trend": trend,
+        "hh": hh,
+        "hl": hl,
+        "lh": lh,
+        "ll": ll,
     }
