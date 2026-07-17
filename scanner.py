@@ -4,6 +4,7 @@ from structure import detect_market_structure
 from bos import detect_bos
 from choch import detect_choch
 from strategy import evaluate_strategy
+from trade import build_trade
 
 
 def analyze_timeframe(symbol, timeframe):
@@ -19,23 +20,14 @@ def analyze_timeframe(symbol, timeframe):
     choch = detect_choch(structure)
 
     return {
-
-        "timeframe": timeframe,
-
-        "rsi": rsi,
-
+        "candles": candles,
         "trend": structure["trend"],
-
+        "rsi": rsi,
         "bos": bos["bos"],
-
         "bos_direction": bos["direction"],
-
         "choch": choch["choch"],
-
         "choch_direction": choch["direction"],
-
-        "price": candles[-1]["close"]
-
+        "price": candles[-1]["close"],
     }
 
 
@@ -48,6 +40,11 @@ def scan(symbol):
     h1 = analyze_timeframe(symbol, "1H")
 
     signal = evaluate_strategy(day, h4, h1)
+
+    trade = build_trade(
+        signal["signal"],
+        h1["candles"]
+    )
 
     return {
 
@@ -65,6 +62,8 @@ def scan(symbol):
 
         "signal": signal["signal"],
 
-        "confidence": signal["confidence"]
+        "confidence": signal["confidence"],
+
+        "trade": trade,
 
     }
