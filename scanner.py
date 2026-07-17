@@ -6,36 +6,33 @@ from bos import detect_bos
 
 def scan(symbol):
 
-    try:
+    candles = get_candles(symbol)
 
-        df = get_candles(symbol)
+    rsi = calculate_rsi(candles)
 
-        rsi = calculate_rsi(df)
+    structure = detect_market_structure(candles)
 
-        structure = detect_market_structure(df)
+    bos = detect_bos(structure)
 
-        bos = detect_bos(structure)
+    last = candles[-1]
 
-        return {
-            "success": True,
-            "symbol": symbol,
-            "price": round(df["close"].iloc[-1], 2),
-            "rsi": round(rsi, 2),
+    return {
 
-            "trend": structure["trend"],
+        "success": True,
 
-            "hh": structure["hh"],
-            "hl": structure["hl"],
-            "lh": structure["lh"],
-            "ll": structure["ll"],
+        "symbol": symbol,
 
-            "bos": bos["bos"],
-            "direction": bos["direction"],
-        }
+        "price": last["close"],
 
-    except Exception as e:
+        "rsi": round(rsi, 2),
 
-        return {
-            "success": False,
-            "error": str(e),
-        }
+        "trend": structure["trend"],
+
+        "hh": structure["hh"],
+        "hl": structure["hl"],
+        "lh": structure["lh"],
+        "ll": structure["ll"],
+
+        "bos": bos["bos"],
+        "direction": bos["direction"],
+    }
