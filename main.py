@@ -27,7 +27,7 @@ def startup():
         print(f"❌ Error Bitget: {e}")
 
     # -----------------------------------------
-    # CANDLES
+    # PRUEBA DE VELAS
     # -----------------------------------------
 
     try:
@@ -41,9 +41,18 @@ def startup():
         print("✅ Velas recibidas")
         print(candles)
 
+        send_message(
+            "📈 PRUEBA BITGET\n\n"
+            "✅ Se descargaron correctamente las velas de BTCUSDT."
+        )
+
     except Exception as e:
 
         print(f"❌ Error obteniendo velas: {e}")
+
+        send_message(
+            f"❌ Error obteniendo velas:\n\n{e}"
+        )
 
     # -----------------------------------------
     # TELEGRAM
@@ -73,9 +82,6 @@ def main():
     while True:
 
         print("Radar activo...")
-
-        # Próximamente:
-        # scanner.scan()
 
         time.sleep(900)
 
