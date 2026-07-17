@@ -4,50 +4,73 @@ from scanner import scan
 from telegram_bot import send_telegram_message
 from signals import should_send
 
+
 PAIRS = [
+
     "BTCUSDT",
+
     "ETHUSDT",
+
     "SOLUSDT",
+
     "BNBUSDT",
+
     "XRPUSDT",
+
     "DOGEUSDT",
+
 ]
 
 
 def build_message(result):
 
+    trade = result["trade"]
+
     return f"""
 🚀 LENCHO SMC RADAR
 
-━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━
 
-📌 Activo: {result["symbol"]}
+📌 {result["symbol"]}
 
-💲 Precio: {result["price"]:.2f}
+💲 Precio : {result["price"]:.2f}
 
-📅 1D: {result["day"]["trend"].upper()}
-🕓 4H: {result["h4"]["trend"].upper()}
-🕐 1H: {result["h1"]["trend"].upper()}
+📅 1D : {result["day"]["trend"]}
 
-📈 RSI 1H: {result["h1"]["rsi"]:.2f}
+🕓 4H : {result["h4"]["trend"]}
 
-📊 BOS: {"✅" if result["h1"]["bos"] else "❌"}
-🔄 CHoCH: {"✅" if result["h1"]["choch"] else "❌"}
+🕐 1H : {result["h1"]["trend"]}
 
-🎯 SEÑAL: {result["signal"]}
+📈 RSI : {result["h1"]["rsi"]:.2f}
 
-⭐ Convicción: {result["confidence"]}/10
+📊 BOS : {"✅" if result["h1"]["bos"] else "❌"}
 
-━━━━━━━━━━━━━━━━━━━━━━
+🔄 CHoCH : {"✅" if result["h1"]["choch"] else "❌"}
+
+━━━━━━━━━━━━━━━━━━
+
+🎯 SEÑAL : {result["signal"]}
+
+⭐ Convicción : {result["confidence"]}/10
+
+💰 Entrada : {trade["entry"]}
+
+🛑 Stop : {trade["stop"]}
+
+🎯 Take Profit : {trade["target"]}
+
+📊 RR : {trade["rr"]}
+
+━━━━━━━━━━━━━━━━━━
 """
 
 
 def main():
 
-    print("LENCHO SMC RADAR iniciado...")
+    print("LENCHO SMC RADAR iniciado")
 
     send_telegram_message(
-        "🚀 LENCHO SMC RADAR\n\nBot iniciado correctamente."
+        "🚀 LENCHO SMC RADAR iniciado correctamente."
     )
 
     while True:
@@ -61,7 +84,13 @@ def main():
                 if not result["success"]:
                     continue
 
-                if should_send(result["symbol"], result["signal"]):
+                if not result["trade"]["valid"]:
+                    continue
+
+                if should_send(
+                    result["symbol"],
+                    result["signal"]
+                ):
 
                     send_telegram_message(
                         build_message(result)
@@ -69,7 +98,7 @@ def main():
 
             except Exception as e:
 
-                print(f"{symbol}: {e}")
+                print(symbol, e)
 
             time.sleep(2)
 
