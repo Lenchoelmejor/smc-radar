@@ -1,34 +1,36 @@
-def market_structure(closes):
-    """
-    Detecta la estructura básica del mercado.
+def detect_market_structure(df):
 
-    Retorna:
-        bullish
-        bearish
-        ranging
-    """
+    highs = df["high"].tolist()
+    lows = df["low"].tolist()
 
-    if len(closes) < 10:
-        return "unknown"
+    last_high = max(highs[-10:])
+    prev_high = max(highs[-20:-10])
 
-    highs = []
-    lows = []
+    last_low = min(lows[-10:])
+    prev_low = min(lows[-20:-10])
 
-    for i in range(1, len(closes) - 1):
+    if last_high > prev_high and last_low > prev_low:
+        return {
+            "trend": "bullish",
+            "hh": True,
+            "hl": True,
+            "lh": False,
+            "ll": False,
+        }
 
-        if closes[i] > closes[i - 1] and closes[i] > closes[i + 1]:
-            highs.append(closes[i])
+    elif last_high < prev_high and last_low < prev_low:
+        return {
+            "trend": "bearish",
+            "hh": False,
+            "hl": False,
+            "lh": True,
+            "ll": True,
+        }
 
-        if closes[i] < closes[i - 1] and closes[i] < closes[i + 1]:
-            lows.append(closes[i])
-
-    if len(highs) < 2 or len(lows) < 2:
-        return "ranging"
-
-    if highs[-1] > highs[-2] and lows[-1] > lows[-2]:
-        return "bullish"
-
-    if highs[-1] < highs[-2] and lows[-1] < lows[-2]:
-        return "bearish"
-
-    return "ranging"
+    return {
+        "trend": "ranging",
+        "hh": False,
+        "hl": False,
+        "lh": False,
+        "ll": False,
+    }
