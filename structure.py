@@ -8,11 +8,17 @@ def detect_market_structure(candles):
     if len(highs) < 2 or len(lows) < 2:
 
         return {
-            "trend": "unknown",
+
+            "trend": "ranging",
+
             "hh": False,
+
             "hl": False,
+
             "lh": False,
+
             "ll": False,
+
         }
 
     last_high = highs[-1]["price"]
@@ -28,12 +34,15 @@ def detect_market_structure(candles):
     ll = last_low < prev_low
 
     if hh and hl:
+
         trend = "bullish"
 
     elif lh and ll:
+
         trend = "bearish"
 
     else:
+
         trend = "ranging"
 
     return {
@@ -41,13 +50,11 @@ def detect_market_structure(candles):
         "trend": trend,
 
         "hh": hh,
+
         "hl": hl,
+
         "lh": lh,
+
         "ll": ll,
 
-        "last_high": last_high,
-        "last_low": last_low,
-
-        "previous_high": prev_high,
-        "previous_low": prev_low,
     }
