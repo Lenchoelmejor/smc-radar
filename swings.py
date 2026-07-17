@@ -1,15 +1,15 @@
-def detect_swings(candles, left=2, right=2):
+def detect_swings(candles, left=3, right=3):
 
-    highs = []
-    lows = []
+    swing_highs = []
+    swing_lows = []
 
     for i in range(left, len(candles) - right):
 
         high = candles[i]["high"]
         low = candles[i]["low"]
 
-        swing_high = True
-        swing_low = True
+        is_high = True
+        is_low = True
 
         for j in range(i - left, i + right + 1):
 
@@ -17,21 +17,29 @@ def detect_swings(candles, left=2, right=2):
                 continue
 
             if candles[j]["high"] >= high:
-                swing_high = False
+                is_high = False
 
             if candles[j]["low"] <= low:
-                swing_low = False
+                is_low = False
 
-        if swing_high:
-            highs.append({
+        if is_high:
+
+            swing_highs.append({
+
                 "index": i,
+
                 "price": high
+
             })
 
-        if swing_low:
-            lows.append({
+        if is_low:
+
+            swing_lows.append({
+
                 "index": i,
+
                 "price": low
+
             })
 
-    return highs, lows
+    return swing_highs, swing_lows
