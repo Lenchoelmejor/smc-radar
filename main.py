@@ -1,8 +1,7 @@
 import time
 
-from telegram_bot import send_message
 from scanner import scan
-
+from telegram_bot import send_telegram_message
 
 PAIRS = [
     "BTCUSDT",
@@ -14,46 +13,58 @@ PAIRS = [
 ]
 
 
-def startup():
+def build_message(result):
 
-    print("=" * 60)
-    print("LENCHO SMC RADAR")
-    print("=" * 60)
+    return f"""
+🚀 LENCHO SMC RADAR
 
-    message = "📊 LENCHO SMC RADAR\n\n"
+━━━━━━━━━━━━━━━━━━━━
 
-    for symbol in PAIRS:
+📌 {result["symbol"]}
 
-        result = scan(symbol)
+💲 Precio: {result["price"]:.2f}
 
-        if result["success"]:
+📅 1D : {result["day"]["trend"]}
+🕓 4H : {result["h4"]["trend"]}
+🕐 1H : {result["h1"]["trend"]}
 
-            message += (
-                f"📈 {symbol}\n"
-                f"💰 Precio: {result['price']}\n"
-                f"📊 RSI: {result['rsi']}\n"
-                f"📉 Tendencia: {result['trend']}\n\n"
-            )
+📈 RSI 1H : {result["h1"]["rsi"]:.2f}
 
-        else:
+📊 BOS : {"✅" if result["h1"]["bos"] else "❌"}
 
-            message += (
-                f"❌ {symbol}\n"
-                f"{result['error']}\n\n"
-            )
+🔄 CHoCH : {"✅" if result["h1"]["choch"] else "❌"}
 
-    print(message)
+🎯 SEÑAL : {result["signal"]}
 
-    send_message(message)
+⭐ Convicción : {result["confidence"]}/10
+"""
 
 
 def main():
 
+    send_telegram_message("🚀 LENCHO SMC RADAR iniciado")
+
     while True:
 
-        startup()
+        for symbol in PAIRS:
 
-        print("Esperando próximo escaneo...")
+            try:
+
+                result = scan(symbol)
+
+                if result["success"]:
+
+                    send_telegram_message(
+                        build_message(result)
+                    )
+
+            except Exception as e:
+
+                send_telegram_message(
+                    f"❌ {symbol}\n{e}"
+                )
+
+            time.sleep(2)
 
         time.sleep(900)
 
