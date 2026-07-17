@@ -1,8 +1,6 @@
-def calculate_rsi(closes, period=14):
-    """
-    Calcula RSI utilizando el método clásico de Wilder.
-    Retorna None si no hay suficientes datos.
-    """
+def calculate_rsi(candles, period=14):
+
+    closes = [c["close"] for c in candles]
 
     if len(closes) < period + 1:
         return None
@@ -12,31 +10,27 @@ def calculate_rsi(closes, period=14):
 
     for i in range(1, period + 1):
 
-        change = closes[i] - closes[i - 1]
+        diff = closes[i] - closes[i - 1]
 
-        if change >= 0:
-            gains.append(change)
-            losses.append(0)
-        else:
-            gains.append(0)
-            losses.append(abs(change))
+        gains.append(max(diff, 0))
+        losses.append(max(-diff, 0))
 
     avg_gain = sum(gains) / period
     avg_loss = sum(losses) / period
 
     for i in range(period + 1, len(closes)):
 
-        change = closes[i] - closes[i - 1]
+        diff = closes[i] - closes[i - 1]
 
-        gain = max(change, 0)
-        loss = max(-change, 0)
+        gain = max(diff, 0)
+        loss = max(-diff, 0)
 
-        avg_gain = ((avg_gain * (period - 1)) + gain) / period
-        avg_loss = ((avg_loss * (period - 1)) + loss) / period
+        avg_gain = ((avg_gain * 13) + gain) / 14
+        avg_loss = ((avg_loss * 13) + loss) / 14
 
     if avg_loss == 0:
-        return 100.0
+        return 100
 
     rs = avg_gain / avg_loss
 
-    return round(100 - (100 / (1 + rs)), 2)
+    return 100 - (100 / (1 + rs))
