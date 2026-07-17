@@ -1,8 +1,7 @@
 import time
 
 from telegram_bot import send_message
-from bitget import get_server_time
-from market import get_candles
+from scanner import scan
 
 
 def startup():
@@ -11,68 +10,28 @@ def startup():
     print("LENCHO SMC RADAR")
     print("=" * 60)
 
-    # -----------------------------------------
-    # BITGET
-    # -----------------------------------------
+    result = scan("BTCUSDT")
 
-    try:
+    if result["success"]:
 
-        server = get_server_time()
-
-        print("✅ Bitget conectado")
-        print(server)
-
-    except Exception as e:
-
-        print(f"❌ Error Bitget: {e}")
-
-    # -----------------------------------------
-    # PRUEBA DE VELAS
-    # -----------------------------------------
-
-    try:
-
-        candles = get_candles(
-            symbol="BTCUSDT",
-            interval="1H",
-            limit=5,
+        message = (
+            "📊 BTCUSDT\n\n"
+            f"💵 Precio: {result['price']}\n"
+            f"📈 RSI (14): {result['rsi']}\n"
+            f"📊 Tendencia: {result['trend']}"
         )
 
-        print("✅ Velas recibidas")
-        print(candles)
+        print(message)
+
+        send_message(message)
+
+    else:
+
+        print(result["error"])
 
         send_message(
-            "📈 PRUEBA BITGET\n\n"
-            "✅ Se descargaron correctamente las velas de BTCUSDT."
+            f"❌ Error:\n\n{result['error']}"
         )
-
-    except Exception as e:
-
-        print(f"❌ Error obteniendo velas: {e}")
-
-        send_message(
-            f"❌ Error obteniendo velas:\n\n{e}"
-        )
-
-    # -----------------------------------------
-    # TELEGRAM
-    # -----------------------------------------
-
-    try:
-
-        send_message(
-            "🚀 LENCHO SMC RADAR\n\n"
-            "✅ Bot iniciado correctamente.\n"
-            "✅ Bitget conectado.\n"
-            "✅ Telegram conectado.\n\n"
-            "Esperando próximo escaneo..."
-        )
-
-        print("✅ Telegram conectado")
-
-    except Exception as e:
-
-        print(f"❌ Error Telegram: {e}")
 
 
 def main():
@@ -81,9 +40,11 @@ def main():
 
     while True:
 
-        print("Radar activo...")
+        print("Esperando próximo escaneo...")
 
         time.sleep(900)
+
+        startup()
 
 
 if __name__ == "__main__":
