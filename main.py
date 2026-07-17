@@ -1,24 +1,16 @@
 import time
 
 from scanner import scan
-from telegram_bot import send_telegram_message
+from telegram_bot import send_message
 from signals import should_send
 
-
 PAIRS = [
-
     "BTCUSDT",
-
     "ETHUSDT",
-
     "SOLUSDT",
-
     "BNBUSDT",
-
     "XRPUSDT",
-
     "DOGEUSDT",
-
 ]
 
 
@@ -31,35 +23,32 @@ def build_message(result):
 
 ━━━━━━━━━━━━━━━━━━
 
-📌 {result["symbol"]}
+📌 Activo: {result["symbol"]}
 
-💲 Precio : {result["price"]:.2f}
+💲 Precio: {result["price"]:.2f}
 
-📅 1D : {result["day"]["trend"]}
+📅 1D: {result["day"]["trend"]}
+🕓 4H: {result["h4"]["trend"]}
+🕐 1H: {result["h1"]["trend"]}
 
-🕓 4H : {result["h4"]["trend"]}
+📈 RSI 1H: {result["h1"]["rsi"]:.2f}
 
-🕐 1H : {result["h1"]["trend"]}
-
-📈 RSI : {result["h1"]["rsi"]:.2f}
-
-📊 BOS : {"✅" if result["h1"]["bos"] else "❌"}
-
-🔄 CHoCH : {"✅" if result["h1"]["choch"] else "❌"}
+📊 BOS: {"✅" if result["h1"]["bos"] else "❌"}
+🔄 CHoCH: {"✅" if result["h1"]["choch"] else "❌"}
 
 ━━━━━━━━━━━━━━━━━━
 
-🎯 SEÑAL : {result["signal"]}
+🎯 SEÑAL: {result["signal"]}
 
-⭐ Convicción : {result["confidence"]}/10
+⭐ Convicción: {result["confidence"]}/10
 
-💰 Entrada : {trade["entry"]}
+💰 Entrada: {trade["entry"]}
 
-🛑 Stop : {trade["stop"]}
+🛑 Stop: {trade["stop"]}
 
-🎯 Take Profit : {trade["target"]}
+🎯 Take Profit: {trade["target"]}
 
-📊 RR : {trade["rr"]}
+📊 RR: {trade["rr"]}
 
 ━━━━━━━━━━━━━━━━━━
 """
@@ -69,9 +58,7 @@ def main():
 
     print("LENCHO SMC RADAR iniciado")
 
-    send_telegram_message(
-        "🚀 LENCHO SMC RADAR iniciado correctamente."
-    )
+    send_message("🚀 LENCHO SMC RADAR iniciado correctamente.")
 
     while True:
 
@@ -87,17 +74,10 @@ def main():
                 if not result["trade"]["valid"]:
                     continue
 
-                if should_send(
-                    result["symbol"],
-                    result["signal"]
-                ):
-
-                    send_telegram_message(
-                        build_message(result)
-                    )
+                if should_send(result["symbol"], result["signal"]):
+                    send_message(build_message(result))
 
             except Exception as e:
-
                 print(symbol, e)
 
             time.sleep(2)
