@@ -22,28 +22,23 @@ def get_candles(symbol="BTCUSDT", interval="1H", limit=200):
 
     response.raise_for_status()
 
-    raw = response.json()
+    data = response.json()
 
-    if raw.get("code") != "00000":
-        raise Exception(raw.get("msg"))
+    if data["code"] != "00000":
+        raise Exception(data["msg"])
 
     candles = []
 
-    for c in reversed(raw["data"]):
+    for c in reversed(data["data"]):
 
         candles.append({
 
             "time": int(c[0]),
-
             "open": float(c[1]),
-
             "high": float(c[2]),
-
             "low": float(c[3]),
-
             "close": float(c[4]),
-
-            "volume": float(c[5]),
+            "volume": float(c[5])
 
         })
 
