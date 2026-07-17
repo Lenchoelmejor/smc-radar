@@ -1,8 +1,10 @@
+import threading
 import time
 
 from scanner import scan
 from telegram_bot import send_message
 from signals import should_send
+from webserver import app
 
 PAIRS = [
     "BTCUSDT",
@@ -12,6 +14,19 @@ PAIRS = [
     "XRPUSDT",
     "DOGEUSDT",
 ]
+
+
+def run_webserver():
+    import os
+
+    port = int(os.environ.get("PORT", 10000))
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False,
+        use_reloader=False
+    )
 
 
 def build_message(result):
@@ -56,6 +71,11 @@ def build_message(result):
 
 def main():
 
+    threading.Thread(
+        target=run_webserver,
+        daemon=True
+    ).start()
+
     print("LENCHO SMC RADAR iniciado")
 
     send_message("🚀 LENCHO SMC RADAR iniciado correctamente.")
@@ -74,10 +94,17 @@ def main():
                 if not result["trade"]["valid"]:
                     continue
 
-                if should_send(result["symbol"], result["signal"]):
-                    send_message(build_message(result))
+                if should_send(
+                    result["symbol"],
+                    result["signal"]
+                ):
+
+                    send_message(
+                        build_message(result)
+                    )
 
             except Exception as e:
+
                 print(symbol, e)
 
             time.sleep(2)
